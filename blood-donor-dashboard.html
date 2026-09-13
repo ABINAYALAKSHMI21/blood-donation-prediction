@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donor recall report — blood donation dataset</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241E1B;
+    --paper:#F6F1E7;
+    --paper-raised:#EFE7D8;
+    --oxblood:#7C1F2B;
+    --oxblood-deep:#5A1620;
+    --gold:#B9812F;
+    --clay:#C98A76;
+    --line:rgba(36,30,27,0.14);
+    --muted:#6E6459;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+  }
+  .wrap{
+    max-width:1040px;
+    margin:0 auto;
+    padding:64px 32px 96px;
+  }
+  h1,h2,.num{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    margin:0;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:var(--muted);
+    letter-spacing:0.02em;
+    margin:0 0 10px;
+  }
+  header.hero{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:56px;
+    padding-bottom:48px;
+    border-bottom:1px solid var(--line);
+    align-items:end;
+  }
+  h1{
+    font-size:52px;
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--oxblood);
+  }
+  .hero-copy p{
+    max-width:38ch;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .hero-stat{
+    text-align:left;
+    border-left:1px solid var(--line);
+    padding-left:32px;
+  }
+  .hero-stat .num{
+    font-size:88px;
+    color:var(--oxblood);
+    line-height:1;
+  }
+  .hero-stat .label{
+    font-size:14px;
+    color:var(--muted);
+    margin-top:8px;
+  }
+
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border-bottom:1px solid var(--line);
+    margin-top:0;
+  }
+  .kpi{
+    padding:28px 24px;
+    border-right:1px solid var(--line);
+  }
+  .kpi:last-child{border-right:none;}
+  .kpi .num{
+    font-size:30px;
+  }
+  .kpi .label{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:6px;
+  }
+
+  section{
+    padding:56px 0;
+    border-bottom:1px solid var(--line);
+  }
+  section:last-of-type{border-bottom:none;}
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:24px;
+    margin-bottom:28px;
+  }
+  .section-head h2{
+    font-size:24px;
+  }
+  .section-head p{
+    font-size:14px;
+    color:var(--muted);
+    max-width:34ch;
+    margin:0;
+    text-align:right;
+  }
+
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:48px;
+  }
+
+  .chart-box{
+    position:relative;
+    height:260px;
+  }
+  .chart-note{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:14px;
+  }
+
+  .compare{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:32px;
+  }
+  .compare-item .metric-name{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+  .compare-bars{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .compare-bar-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .compare-bar-row .tag{
+    width:64px;
+    font-size:12px;
+    color:var(--muted);
+    flex-shrink:0;
+  }
+  .compare-bar-track{
+    flex:1;
+    background:var(--paper-raised);
+    height:14px;
+    position:relative;
+  }
+  .compare-bar-fill{
+    height:100%;
+  }
+  .compare-bar-row .val{
+    width:64px;
+    font-size:13px;
+    text-align:right;
+    flex-shrink:0;
+    font-variant-numeric:tabular-nums;
+  }
+
+  footer{
+    padding-top:40px;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  @media (max-width:720px){
+    header.hero{grid-template-columns:1fr;}
+    .hero-stat{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:24px;}
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+    .kpi:nth-child(2){border-right:none;}
+    .grid-2{grid-template-columns:1fr;}
+    .compare{grid-template-columns:1fr;}
+    .section-head{flex-direction:column;}
+    .section-head p{text-align:left;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Donor recall report — March 2007 target</p>
+      <h1>Most donors<br>don't come back<br>on their own. <em>Some do.</em></h1>
+      <p>576 donors with a full giving history — how recently they gave, how often, and how much — tell us who is most likely to walk back in the door without a reminder.</p>
+    </div>
+    <div class="hero-stat">
+      <div class="num">24%</div>
+      <div class="label">of donors on file gave again the following March — 138 out of 576.</div>
+    </div>
+  </header>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="num">576</div>
+      <div class="label">donors in the file</div>
+    </div>
+    <div class="kpi">
+      <div class="num">9.4 mo</div>
+      <div class="label">average time since last gift</div>
+    </div>
+    <div class="kpi">
+      <div class="num">5.4</div>
+      <div class="label">average lifetime donations</div>
+    </div>
+    <div class="kpi">
+      <div class="num">781,500 cc</div>
+      <div class="label">total volume given, all donors</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>How recently they last gave</h2>
+      <p>Nearly a third gave within the last three months — the rest are further out and harder to recall.</p>
+    </div>
+    <div class="chart-box">
+      <canvas id="recencyChart" role="img" aria-label="Bar chart of donor count by months since last donation: 0 to 3 months 163 donors, 4 to 6 months 121, 7 to 12 months 95, 13 to 24 months 191, 25 or more months 6 donors">Recency bands: 0–3 mo 163, 4–6 mo 121, 7–12 mo 95, 13–24 mo 191, 25+ mo 6.</canvas>
+    </div>
+    <p class="chart-note">Months since last donation, grouped into bands, across all 576 donors.</p>
+  </section>
+
+  <section>
+    <div class="grid-2">
+      <div>
+        <div class="section-head" style="margin-bottom:20px;">
+          <h2 style="font-size:20px;">Frequent givers return more</h2>
+        </div>
+        <div class="chart-box" style="height:220px;">
+          <canvas id="frequencyChart" role="img" aria-label="Bar chart of return rate by lifetime donation count: 1 donation 11 percent return rate, 2 donations 17.6 percent, 3 to 4 donations 17.1 percent, 5 to 8 donations 34.4 percent, 9 or more donations 36.3 percent">Return rate by lifetime donations: 1 gift 11%, 2 gifts 17.6%, 3–4 gifts 17.1%, 5–8 gifts 34.4%, 9+ gifts 36.3%.</canvas>
+        </div>
+        <p class="chart-note">Share who gave again, by lifetime number of donations.</p>
+      </div>
+      <div>
+        <div class="section-head" style="margin-bottom:20px;">
+          <h2 style="font-size:20px;">Donor tenure on file</h2>
+        </div>
+        <div class="chart-box" style="height:220px;">
+          <canvas id="tenureChart" role="img" aria-label="Bar chart of donor count by months since first donation: 0 to 12 months 100 donors, 13 to 24 months 149, 25 to 48 months 180, 49 to 72 months 92, 73 or more months 55">Tenure bands: 0–12 mo 100, 13–24 mo 149, 25–48 mo 180, 49–72 mo 92, 73+ mo 55.</canvas>
+        </div>
+        <p class="chart-note">Months since a donor's very first gift.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>What separates a returning donor</h2>
+      <p>Averages for donors who gave again vs. those who didn't.</p>
+    </div>
+    <div class="compare">
+      <div class="compare-item">
+        <div class="metric-name">Months since last donation</div>
+        <div class="compare-bars">
+          <div class="compare-bar-row">
+            <span class="tag">Returned</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:53%;background:#7C1F2B;"></div></div>
+            <span class="val">5.6</span>
+          </div>
+          <div class="compare-bar-row">
+            <span class="tag">Didn't</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:100%;background:#C9877D;"></div></div>
+            <span class="val">10.6</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare-item">
+        <div class="metric-name">Lifetime donations</div>
+        <div class="compare-bars">
+          <div class="compare-bar-row">
+            <span class="tag">Returned</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:100%;background:#7C1F2B;"></div></div>
+            <span class="val">7.7</span>
+          </div>
+          <div class="compare-bar-row">
+            <span class="tag">Didn't</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:61%;background:#C9877D;"></div></div>
+            <span class="val">4.7</span>
+          </div>
+        </div>
+      </div>
+      <div class="compare-item">
+        <div class="metric-name">Total volume donated (cc)</div>
+        <div class="compare-bars">
+          <div class="compare-bar-row">
+            <span class="tag">Returned</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:100%;background:#7C1F2B;"></div></div>
+            <span class="val">1,920</span>
+          </div>
+          <div class="compare-bar-row">
+            <span class="tag">Didn't</span>
+            <div class="compare-bar-track"><div class="compare-bar-fill" style="width:61%;background:#C9877D;"></div></div>
+            <span class="val">1,179</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Source: Warm_Up_Predict_Blood_Donations_-_Traning_Data.csv, 576 donor records. Target: donation made in March 2007.
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  const ink = '#241E1B';
+  const muted = '#6E6459';
+  const grid = 'rgba(36,30,27,0.08)';
+  const oxblood = '#7C1F2B';
+  const clay = '#C9877D';
+
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.color = muted;
+
+  new Chart(document.getElementById('recencyChart'), {
+    type: 'bar',
+    data: {
+      labels: ['0–3 mo', '4–6 mo', '7–12 mo', '13–24 mo', '25+ mo'],
+      datasets: [{
+        label: 'Donors',
+        data: [163, 121, 95, 191, 6],
+        backgroundColor: oxblood,
+        borderRadius: 3,
+        maxBarThickness: 56
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: grid }, ticks: { precision: 0 } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('frequencyChart'), {
+    type: 'bar',
+    data: {
+      labels: ['1', '2', '3–4', '5–8', '9+'],
+      datasets: [{
+        label: 'Return rate',
+        data: [11.0, 17.6, 17.1, 34.4, 36.3],
+        backgroundColor: oxblood,
+        borderRadius: 3,
+        maxBarThickness: 44
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (c) => c.parsed.y + '% returned' } }
+      },
+      scales: {
+        x: { grid: { display: false }, title: { display: true, text: 'Lifetime donations', color: muted, font: { size: 12 } } },
+        y: { grid: { color: grid }, ticks: { callback: (v) => v + '%' } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('tenureChart'), {
+    type: 'bar',
+    data: {
+      labels: ['0–12 mo', '13–24 mo', '25–48 mo', '49–72 mo', '73+ mo'],
+      datasets: [{
+        label: 'Donors',
+        data: [100, 149, 180, 92, 55],
+        backgroundColor: clay,
+        borderRadius: 3,
+        maxBarThickness: 44
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: grid }, ticks: { precision: 0 } }
+      }
+    }
+  });
+</script>
+</body>
+</html>
